@@ -8,11 +8,23 @@ app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser')
 app.use(cookieParser());
 
-
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -98,7 +110,18 @@ app.post("/logout", (req, res) => {
 
 app.get("/register", (req, res) => {
   res.render("urls_reg");
-})
+});
+
+app.post("/register", (req, res) => {
+  const newUserID = generateRandomString();
+  users[newUserID] = {
+    id : newUserID,
+    email : req.body.email,
+    password : req.body.password
+  }
+  res.cookie("user_id", newUserID);
+  res.redirect("/urls");
+});
 
 function generateRandomString() {
   let output = "";

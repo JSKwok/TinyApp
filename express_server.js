@@ -35,10 +35,12 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-//Post req to urlDatabase
+//Adds new key-value pair for website to URL Database, redirects client to short URL page
 app.post("/urls", (req, res) => {
-  urlDatabase[generateRandomString()] = req.body['longURL'];
+  let newShortKey = generateRandomString();
+  urlDatabase[newShortKey] = req.body['longURL'];
   // console.log(urlDatabase);
+  res.redirect(`/urls/${newShortKey}`);
 });
 
 //Get route going to page for a particular URL

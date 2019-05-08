@@ -39,7 +39,7 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   let newShortKey = generateRandomString();
   urlDatabase[newShortKey] = req.body['longURL'];
-  // console.log(urlDatabase);
+  //console.log(urlDatabase);
   res.redirect(`/urls/${newShortKey}`);
 });
 
@@ -49,10 +49,17 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+//Link from the short URL to the full website
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL]
   res.redirect(longURL);
 });
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  //console.log(urlDatabase)
+  res.redirect("/urls");
+})
 
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");

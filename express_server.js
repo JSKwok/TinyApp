@@ -29,12 +29,18 @@ app.get("/urls.json", (req, res) => {
 
 //Get route going to URLs page
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
   res.render("urls_index", templateVars);
 });
 
 //Get route going to new URL page
 app.get("/urls/new", (req, res) => {
+  let templateVars = {
+    username: req.cookies["username"]
+  };
   res.render("urls_new");
 });
 
@@ -49,7 +55,11 @@ app.post("/urls", (req, res) => {
 
 //Get route going to page for a particular URL
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase };
+  let templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase,
+    username: req.cookies["username"]
+  };
   res.render("urls_show", templateVars);
 });
 

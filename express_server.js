@@ -1,6 +1,6 @@
 var express = require("express");
 var app = express();
-var PORT = 8080; // default port 8080
+var PORT = 8080;
 
 app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
@@ -27,7 +27,7 @@ app.get("/urls.json", (req, res) => {
 //Get route going to URLs page
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
-  res.render("urls_index", { urls: urlDatabase });
+  res.render("urls_index", templateVars);
 });
 
 //Get route going to new URL page

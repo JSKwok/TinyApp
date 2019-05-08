@@ -35,12 +35,13 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+//Post req to urlDatabase
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  urlDatabase[generateRandomString()] = req.body['longURL'];
+  // console.log(urlDatabase);
 });
 
-//Get route going to page for a praticular URL
+//Get route going to page for a particular URL
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase };
   res.render("urls_show", templateVars);
@@ -59,5 +60,3 @@ function generateRandomString() {
   };
   return output;
 };
-
-console.log(generateRandomString());

@@ -41,7 +41,7 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {
     username: req.cookies["username"]
   };
-  res.render("urls_new");
+  res.render("urls_new", templateVars);
 });
 
 //Adds new key-value pair for website to URL Database, redirects client to short URL page
@@ -86,10 +86,15 @@ app.get("/hello", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log(req.body['username'])
-  res.cookie('username', req.body['username']);
+  //console.log(req.body['username'])
+  res.cookie("username", req.body['username']);
   res.redirect("/urls");
 });
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
+})
 
 function generateRandomString() {
   let output = "";

@@ -38,6 +38,7 @@ app.get("/urls/new", (req, res) => {
 //Adds new key-value pair for website to URL Database, redirects client to short URL page
 app.post("/urls", (req, res) => {
   let newShortKey = generateRandomString();
+  //console.log(req.body)
   urlDatabase[newShortKey] = req.body['longURL'];
   //console.log(urlDatabase);
   res.redirect(`/urls/${newShortKey}`);
@@ -48,6 +49,12 @@ app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase };
   res.render("urls_show", templateVars);
 });
+
+app.post("/urls/:shortURL/update", (req, res) => {
+  // console.log(req.body);
+  urlDatabase[req.params.shortURL] = req.body['update']
+  res.redirect(/urls/)
+})
 
 //Link from the short URL to the full website
 app.get("/u/:shortURL", (req, res) => {

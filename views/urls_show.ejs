@@ -15,7 +15,7 @@
     <p> TinyURL for <%=longURL[shortURL]%> </p>
     <p> <%= shortURL %> </p>
   </div>
-  <form method="POST" action="/urls/<%= shortURL %>/update">
+  <form method="POST" action="/urls/<%= shortURL %>">
     <input type="text" name="update">
     <button type="submit"> Update </button>
   <link href="#">

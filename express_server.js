@@ -8,11 +8,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser')
 app.use(cookieParser());
 
+// Short URL : Long URL database
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+// User database
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -24,8 +26,9 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
-}
+};
 
+// Root page. Says hello.
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -34,12 +37,12 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-//Get route going to URL database
+// GET routing to JSON files of URL database
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-//Get route going to URLs page
+// GET routing to main URLs index
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
@@ -48,7 +51,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//Get route going to new URL page
+// Get routing to page for creating new
 app.get("/urls/new", (req, res) => {
   let templateVars = {
     user: users[req.cookies["user_id"]]
@@ -56,16 +59,14 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-//Adds new key-value pair for website to URL Database, redirects client to short URL page
+// POST routing to generate new short URL at /URLs
 app.post("/urls", (req, res) => {
   let newShortKey = generateRandomString();
-  //console.log(req.body)
   urlDatabase[newShortKey] = req.body['longURL'];
-  //console.log(urlDatabase);
   res.redirect(`/urls/${newShortKey}`);
 });
 
-//Get route going to page for a particular URL
+// GET routing going to details/edit page by ID
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
@@ -75,28 +76,30 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// Update existing short URL ID page
 app.post("/urls/:id", (req, res) => {
-  // console.log(req.body);
   urlDatabase[req.params.id] = req.body['update']
   res.redirect(/urls/)
 })
 
-//Link from the short URL to the full website
+// Link from short URL to full website
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL]
   res.redirect(longURL);
 });
 
+// POST routing to delete a URL
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
-  //console.log(urlDatabase)
   res.redirect("/urls");
 })
 
+// Misc hello page to be removed
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+// GET routing to login page
 app.get("/login", (req, res) => {
   let templateVars = {
     user: users[req.cookies["user_id"]]
@@ -104,6 +107,7 @@ app.get("/login", (req, res) => {
   res.render("urls_login", templateVars);
 });
 
+// POST routing to login page, verifies if email exists, email and password match, creates cookie
 app.post("/login", (req, res) => {
   if (emailInObject(req.body.email)) {
     for (user in users) {
@@ -119,11 +123,13 @@ app.post("/login", (req, res) => {
   }
 });
 
+// POST routing to logout URL, clears cookie
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
+// GET routing to load register page, create cookie
 app.get("/register", (req, res) => {
   let templateVars = {
     user: users[req.cookies["user_id"]]
@@ -131,6 +137,7 @@ app.get("/register", (req, res) => {
   res.render("urls_reg", templateVars);
 });
 
+// POST routing to register page, creates user ID if email not taken
 app.post("/register", (req, res) => {
   const newUserID = generateRandomString();
   // Handle registration with a blank field:
@@ -150,6 +157,7 @@ app.post("/register", (req, res) => {
   };
 });
 
+// Generator for short ID
 function generateRandomString() {
   let output = "";
   const alphanumeric = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -159,6 +167,7 @@ function generateRandomString() {
   return output;
 };
 
+// Verify if email in use
 function emailInObject(emailInput) {
   for (user in users) {
     if (users[user].email == emailInput) {

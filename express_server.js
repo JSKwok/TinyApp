@@ -1,5 +1,6 @@
 var express = require("express");
 var app = express();
+const bcrypt = require('bcrypt');
 var PORT = 8080;
 
 app.set("view engine", "ejs");
@@ -30,12 +31,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "qwer"
+    password: bcrypt.hashSync("qwer", 10)
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "asdf"
+    password: bcrypt.hashSync("asdf", 10)
   }
 };
 
@@ -140,7 +141,7 @@ app.post("/login", (req, res) => {
     for (user in users) {
       // console.log("Email good?", req.body.email === users[user]['email']);
       // console.log("Password good?", req.body.password === users[user]['password'])
-      if (users[user]['email'] === req.body.email && users[user]['password'] === req.body.password) {
+      if (users[user]['email'] === req.body.email && bcrypt.compareSync(req.body.password, users[user]['password'])) {
         res.cookie("user_id", user);
         res.redirect("/urls");
         return;
@@ -176,10 +177,11 @@ app.post("/register", (req, res) => {
   } else if (emailInObject(req.body.email)) {
     res.status(400).send("Email already in use");
   } else {
+      let password = bcrypt.hashSync(req.body.password, 10);
       users[newUserID] = {
-      id : newUserID,
-      email : req.body.email,
-      password : req.body.password
+        id : newUserID,
+        email : req.body.email,
+        password : password
     }
     res.cookie("user_id", newUserID);
     res.redirect("/urls");

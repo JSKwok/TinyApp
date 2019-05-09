@@ -15,8 +15,14 @@ app.listen(PORT, () => {
 
 // Short URL : Long URL database
 var urlDatabase = {
-  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID" },
-  "9sm5xK": { longURL: "http://www.google.com", userID: "user2RandomID" }
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "user2RandomID"
+  }
 };
 
 // User database
@@ -24,12 +30,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: "qwer"
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: "asdf"
   }
 };
 
@@ -45,6 +51,7 @@ app.get("/urls.json", (req, res) => {
 
 // GET routing to main URLs index
 app.get("/urls", (req, res) => {
+  //console.log(urlsForUser(req.cookies["user_id"]));
   let templateVars = {
     urls: urlsForUser(req.cookies["user_id"]),
     token: req.cookies["user_id"],
@@ -68,15 +75,23 @@ app.get("/urls/new", (req, res) => {
 // POST routing to generate new short URL at /URLs
 app.post("/urls", (req, res) => {
   let newShortKey = generateRandomString();
-  urlDatabase[newShortKey] = req.body['longURL'];
+  urlDatabase[newShortKey] = {
+    longURL : req.body['longURL'],
+    userID : req.cookies["user_id"]
+  }
+  // console.log(urlDatabase[newShortKey])
+  // console.log(urlDatabase)
+  // console.log(urlsForUser("userRandomID"))
   res.redirect(`/urls/${newShortKey}`);
 });
 
 // GET routing going to details/edit page by ID
 app.get("/urls/:shortURL", (req, res) => {
+  // console.log(urlDatabase[req.params.shortURL])
   let templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase,
+    database: urlDatabase,
+    token: req.cookies["user_id"],
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_show", templateVars);
@@ -84,19 +99,24 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // POST routing to update details/edit page by ID
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body['update']
+  if (req.cookies["user_id"]) {
+    urlDatabase[req.params.id]['longURL'] = req.body['update'];
+  };
   res.redirect(/urls/)
 });
 
 // Link from short URL to full website
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
+  console.log(urlDatabase[req.params.shortURL])
+  const longURL = urlDatabase[req.params.shortURL]["longURL"]
   res.redirect(longURL);
 });
 
 // POST routing to delete a URL
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+  if (req.cookies["user_id"]) {
+    delete urlDatabase[req.params.shortURL];
+  }
   res.redirect("/urls");
 });
 
@@ -116,16 +136,19 @@ app.get("/login", (req, res) => {
 // POST routing to login page, verifies if email exists, email and password match, creates cookie
 app.post("/login", (req, res) => {
   if (emailInObject(req.body.email)) {
+    // console.log("Email exist?", emailInObject(req.body.email))
     for (user in users) {
-      if (req.body.password === users[user]['password']) {
+      // console.log("Email good?", req.body.email === users[user]['email']);
+      // console.log("Password good?", req.body.password === users[user]['password'])
+      if (users[user]['email'] === req.body.email && users[user]['password'] === req.body.password) {
         res.cookie("user_id", user);
         res.redirect("/urls");
-        break;
+        return;
       };
-    };
-    res.status(403); // .render(/"urls_login")
+    }
+    res.status(403).send("Email/password mismatch"); // .render(/"urls_login")
   } else {
-    res.status(403); //.render("urls_login")
+    res.status(403).send("Email not found"); //.render("urls_login")
   }
 });
 
@@ -148,10 +171,10 @@ app.post("/register", (req, res) => {
   const newUserID = generateRandomString();
   // Handle registration with a blank field:
   if (!req.body.email || !req.body.password) {
-    res.status(400).send();
-  // Handle registration of esisting email:
+    res.status(400).send("Please fill out all fields");
+  // Handle registration of existing email:
   } else if (emailInObject(req.body.email)) {
-    res.status(400);
+    res.status(400).send("Email already in use");
   } else {
       users[newUserID] = {
       id : newUserID,
@@ -185,15 +208,15 @@ function emailInObject(emailInput) {
 
 function urlsForUser(id) {
   let output = {}
-  for (user in users) {
-    if (id === users[user]['id']) {
-      for (shortURL in urlDatabase) {
-        output[shortURL] = urlDatabase[shortURL]['longURL'];
-      }
+  for (let url in urlDatabase) {
+    //console.log("Does Id match? ", id, " = ", urlDatabase[url].userID)
+    //console.log("Result? ", id === urlDatabase[url].userID)
+    if (id === urlDatabase[url].userID) {
+      output[url] = urlDatabase[url].longURL;
+      // console.log('output: ' , output);
     }
   }
   return output;
 }
 
-
-
+// console.log("Final output", urlsForUser("user2RandomID"));

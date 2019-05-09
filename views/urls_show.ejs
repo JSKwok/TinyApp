@@ -12,13 +12,17 @@
 <body style="font-size:20px; padding:50px;">
   <a href="/urls">Home</a>
   <a href="/urls/new">New short URL</a>
-  <div>
-    <p> TinyURL for <%=longURL[shortURL]%> </p>
-    <p> <%= shortURL %> </p>
-  </div>
-  <form method="POST" action="/urls/<%= shortURL %>">
-    <input type="text" name="update">
-    <button type="submit"> Update </button>
-  <link href="#">
+  <% if (token) { %>
+    <div class="membersonly">
+      <p> TinyURL for <%=database[shortURL]['longURL']%> </p>
+      <p> <%= shortURL %> </p>
+    <form method="POST" action="/urls/<%= shortURL %>">
+      <input type="text" name="update">
+      <button type="submit"> Update </button>
+    </form>
+    </div>
+  <% } else { %>
+    <p> Please login to view shortened URLs! </p>
+  <% } %>
 </body>
 </html>

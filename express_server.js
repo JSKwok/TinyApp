@@ -102,8 +102,18 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("user_id", req.body['user_id']);
-  res.redirect("/urls");
+  if (emailInObject(req.body.email)) {
+    for (user in users) {
+      if (req.body.password === users[user]['password']) {
+        res.cookie("user_id", user);
+        res.redirect("/urls");
+        break;
+      };
+    };
+    res.status(403) // .render(/"urls_login")
+  } else {
+    res.status(403) //.render("urls_login")
+  }
 });
 
 app.post("/logout", (req, res) => {
@@ -119,9 +129,9 @@ app.post("/register", (req, res) => {
   const newUserID = generateRandomString();
   // Handle registration with a blank field:
   if (!req.body.email || !req.body.password) {
-    res.status(400).render("urls_reg");
+    res.status(400) //.render("urls_reg");
   } else if (emailInObject(req.body.email)) {
-    res.status(400).render("urls_reg");
+    res.status(400) //.render("urls_reg");
   } else {
       users[newUserID] = {
       id : newUserID,
@@ -130,6 +140,7 @@ app.post("/register", (req, res) => {
     }
     res.cookie("user_id", newUserID);
     res.redirect("/urls");
+    console.log(req.body);
   };
 });
 

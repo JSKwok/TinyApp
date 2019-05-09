@@ -12,6 +12,9 @@
 </head>
 <body style="font-size:20px; padding:50px;">
   <a href="/urls/new"> New short URL </a>
+
+  <% if (token) { %>
+
   <div>
     <ul>
       <% for (url in urls) { %>
@@ -23,5 +26,6 @@
       <% } %>
     </ul>
   </div>
+  <% } %>
 </body>
 </html>

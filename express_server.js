@@ -46,7 +46,8 @@ app.get("/urls.json", (req, res) => {
 // GET routing to main URLs index
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlDatabase,
+    urls: urlsForUser(req.cookies["user_id"]),
+    token: req.cookies["user_id"],
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
@@ -181,3 +182,18 @@ function emailInObject(emailInput) {
   };
   return false;
 };
+
+function urlsForUser(id) {
+  let output = {}
+  for (user in users) {
+    if (id === users[user]['id']) {
+      for (shortURL in urlDatabase) {
+        output[shortURL] = urlDatabase[shortURL]['longURL'];
+      }
+    }
+  }
+  return output;
+}
+
+
+

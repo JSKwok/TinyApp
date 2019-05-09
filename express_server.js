@@ -114,13 +114,20 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const newUserID = generateRandomString();
-  users[newUserID] = {
-    id : newUserID,
-    email : req.body.email,
-    password : req.body.password
-  }
-  res.cookie("user_id", newUserID);
-  res.redirect("/urls");
+  // Handle registration with a blank field:
+  if (!req.body.email || !req.body.password) {
+    res.status(400).render("urls_reg");
+  } else if (emailInObject(req.body.email)) {
+    res.status(400).render("urls_reg");
+  }else {
+    users[newUserID] = {
+      id : newUserID,
+      email : req.body.email,
+      password : req.body.password
+    }
+    res.cookie("user_id", newUserID);
+    res.redirect("/urls");
+  };
 });
 
 function generateRandomString() {
@@ -131,3 +138,12 @@ function generateRandomString() {
   };
   return output;
 };
+
+function emailInObject(emailInput) {
+  for (user in users) {
+    if (users[user].email == emailInput) {
+      return true;
+    }
+  }
+  return false;
+}

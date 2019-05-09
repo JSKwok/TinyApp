@@ -8,6 +8,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser')
 app.use(cookieParser());
 
+// Initiate server
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
+
 // Short URL : Long URL database
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -33,10 +38,6 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
-
 // GET routing to JSON files of URL database
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -51,12 +52,16 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-// Get routing to page for creating new
+// Get routing to page for creating new URL
 app.get("/urls/new", (req, res) => {
   let templateVars = {
     user: users[req.cookies["user_id"]]
   };
-  res.render("urls_new", templateVars);
+  if (req.cookies["user_id"]) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 // POST routing to generate new short URL at /URLs
@@ -76,7 +81,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// Update existing short URL ID page
+// POST routing to update details/edit page by ID
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body['update']
   res.redirect(/urls/)
@@ -142,7 +147,7 @@ app.post("/register", (req, res) => {
   const newUserID = generateRandomString();
   // Handle registration with a blank field:
   if (!req.body.email || !req.body.password) {
-    res.status(400);
+    res.status(400).send();
   // Handle registration of esisting email:
   } else if (emailInObject(req.body.email)) {
     res.status(400);
@@ -170,7 +175,7 @@ function generateRandomString() {
 // Verify if email in use
 function emailInObject(emailInput) {
   for (user in users) {
-    if (users[user].email == emailInput) {
+    if (users[user]['email'] === emailInput) {
       return true;
     };
   };

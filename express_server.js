@@ -80,7 +80,7 @@ app.get("/urls/:shortURL", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body['update']
   res.redirect(/urls/)
-})
+});
 
 // Link from short URL to full website
 app.get("/u/:shortURL", (req, res) => {
@@ -92,7 +92,7 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
-})
+});
 
 // Misc hello page to be removed
 app.get("/hello", (req, res) => {
@@ -117,9 +117,9 @@ app.post("/login", (req, res) => {
         break;
       };
     };
-    res.status(403) // .render(/"urls_login")
+    res.status(403); // .render(/"urls_login")
   } else {
-    res.status(403) //.render("urls_login")
+    res.status(403); //.render("urls_login")
   }
 });
 
@@ -142,9 +142,10 @@ app.post("/register", (req, res) => {
   const newUserID = generateRandomString();
   // Handle registration with a blank field:
   if (!req.body.email || !req.body.password) {
-    res.status(400) //.render("urls_reg");
+    res.status(400);
+  // Handle registration of esisting email:
   } else if (emailInObject(req.body.email)) {
-    res.status(400) //.render("urls_reg");
+    res.status(400);
   } else {
       users[newUserID] = {
       id : newUserID,
@@ -153,7 +154,6 @@ app.post("/register", (req, res) => {
     }
     res.cookie("user_id", newUserID);
     res.redirect("/urls");
-    console.log(req.body);
   };
 });
 
@@ -172,7 +172,7 @@ function emailInObject(emailInput) {
   for (user in users) {
     if (users[user].email == emailInput) {
       return true;
-    }
-  }
+    };
+  };
   return false;
-}
+};

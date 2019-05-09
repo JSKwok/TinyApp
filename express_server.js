@@ -43,7 +43,7 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
 });
@@ -51,7 +51,7 @@ app.get("/urls", (req, res) => {
 //Get route going to new URL page
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
   };
   res.render("urls_new", templateVars);
 });
@@ -70,7 +70,7 @@ app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase,
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
   };
   res.render("urls_show", templateVars);
 });
@@ -98,13 +98,12 @@ app.get("/hello", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  //console.log(req.body['username'])
-  res.cookie("username", req.body['username']);
+  res.cookie("user_id", req.body['user_id']);
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
@@ -119,8 +118,8 @@ app.post("/register", (req, res) => {
     res.status(400).render("urls_reg");
   } else if (emailInObject(req.body.email)) {
     res.status(400).render("urls_reg");
-  }else {
-    users[newUserID] = {
+  } else {
+      users[newUserID] = {
       id : newUserID,
       email : req.body.email,
       password : req.body.password

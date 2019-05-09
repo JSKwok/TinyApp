@@ -7,16 +7,17 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
+  <% include ../partials/_header.ejs %>
 
 </head>
 <body>
-  <h1> Registration </h1>
+  <h1> Create account: </h1>
   <form method="POST" action="/register">
     <label for="email"> Email: </label>
     <input type="email" name="email">
     <label for="password"> Password: </label>
     <input type="password" name="password">
-    <button type="submit">Submit</button>
+    <button type="submit">Register</button>
   </form>
 
 </body>

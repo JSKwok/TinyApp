@@ -98,7 +98,10 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.render("urls_login");
+  let templateVars = {
+    user: users[req.cookies["user_id"]]
+  };
+  res.render("urls_login", templateVars);
 });
 
 app.post("/login", (req, res) => {
@@ -122,7 +125,10 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  res.render("urls_reg");
+  let templateVars = {
+    user: users[req.cookies["user_id"]]
+  };
+  res.render("urls_reg", templateVars);
 });
 
 app.post("/register", (req, res) => {

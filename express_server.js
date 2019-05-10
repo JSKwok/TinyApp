@@ -16,7 +16,7 @@ app.use(cookieSession({
 //app.use(morgan('dev'));
 
 // Short URL : Long URL database
-var urlDatabase = {
+const urlDatabase = {
   'b2xVn2': {
     longURL: 'http://www.lighthouselabs.ca',
     userID: 'userRandomID'
@@ -114,7 +114,7 @@ app.get('/urls/:shortURL', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   if (!req.session.user_id) {
     res.status(403).send('Error 403: You do not have permission to access this resource. Please visit /login to begin');
-  } else if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
+  } else if (req.session.user_id !== urlDatabase[req.params.id].userID) {
     res.status(403).send('Error 403: You do not have permission to access this resource. Please visit /login to begin');
   } else {
     urlDatabase[req.params.id]['longURL'] = req.body['update'];

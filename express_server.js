@@ -9,8 +9,8 @@ const PORT = 8080;
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
-  name: 'pumpkinSeeds',
-  keys: ['secretKey']
+  name: 'tinyApp',
+  keys: ['tinyKey']
 }));
 
 const error403 = 'Error 403: You do not have permission to access this resource. Please visit /login to begin';
@@ -133,7 +133,7 @@ app.get('/u/:shortURL', (req, res) => {
   };
 });
 
-// Routing to delete a previously created shortlink
+// Routing to delete a previously created short link
 app.post('/urls/:shortURL/delete', (req, res) => {
   if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
     delete urlDatabase[req.params.shortURL];
@@ -192,12 +192,10 @@ app.get('/register', (req, res) => {
 // Routing to create an account through the register page
 app.post('/register', (req, res) => {
   const newUserID = generateRandomString();
-  // Handle registration with a blank field:
   if (!req.body.email || !req.body.password) {
-    res.status(400).send('Please fill out all fields');
-  // Handle registration of existing email:
+    res.status(400).send('Please fill out all fields.');
   } else if (emailInObject(req.body.email)) {
-    res.status(400).send('Email already in use');
+    res.status(400).send('Email already in use.');
   } else {
       let password = bcrypt.hashSync(req.body.password, 10);
       users[newUserID] = {

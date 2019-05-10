@@ -10,25 +10,47 @@
 
   <% include ../partials/_header.ejs %>
 </head>
-<body style="font-size:20px; padding:50px;">
-  <a href="/urls/new"> New short URL </a>
+<body style="font-size:20px; padding:50px">
 
   <% if (token) { %>
 
+  <button style="margin-top:20px;">
+    <a href="/urls/new">New Link</a>
+  </button>
   <div>
-    <ul>
-      <% for (url in urls) { %>
-        <li> <%= url %> : <%= urls[url] %> </li><br>
-        <form method="POST" action="/urls/<%= url %>/delete">
-          <button> Delete </button>
-        </form>
-        <a href="/urls/<%= url %>" > Edit </a>
-      <% } %>
-    </ul>
+    <table class="table table-dark" style="margin-top:20px">
+      <thead>
+        <tr>
+          <th scope="col"> </th>
+          <th scope="col"> Link </th>
+          <th scope="col"> Website </th>
+          <th scope="col">  </th>
+          <th scope="col">  </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let url in urls) { %>
+          <tr>
+            <th scope="row"> </th>
+              <td> <%= url %> </td>
+              <td> <%= urls[url] %> </td>
+              <td>
+                <button>
+                  <a href="/urls/<%= url %>" > Edit </a>
+                </button>
+              </td>
+              <td>
+                <form method="POST" action="/urls/<%= url %>/delete">
+                  <button type="delete" class="btn btn-danger"> Delete </button>
+                </form>
+              </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
   </div>
-
   <% } else { %>
-    <p> Please login to view shortened URLs! </p>
+    <p> Welcome to TinyApp! Please login to begin. </p>
   <% } %>
 </body>
 </html>

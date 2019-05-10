@@ -6,23 +6,27 @@
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
   <title>TinyApp</title>
   <% include ../partials/_header.ejs %>
 </head>
 <body style="font-size:20px; padding:50px;">
-  <a href="/urls">Home</a>
-  <a href="/urls/new">New short URL</a>
+  <div class="buttons" style="margin-top:20px; margin-bottom:20px">
+    <button> <a href="/urls">Home</a> </button>
+    <button> <a href="/urls/new">New</a> </button>
+  </div>
   <% if (token) { %>
     <div class="membersonly">
-      <p> TinyURL for <%=database[shortURL]['longURL']%> </p>
-      <p> <%= shortURL %> </p>
-    <form method="POST" action="/urls/<%= shortURL %>">
-      <input type="text" name="update">
-      <button type="submit"> Update </button>
-    </form>
+      <form method="POST" action="/urls/<%= shortURL %>">
+        <p> Short Link: <strong><%= shortURL %></strong></p>
+        <p> TinyURL for <%=database[shortURL]['longURL']%> </p>
+        <label for="update">Change URL for this Link:</label>
+        <input type="text" name="update" placeholder="http://" style="width:200px">
+        <button type="submit"> Update </button>
+      </form>
     </div>
   <% } else { %>
-    <p> Please login to view shortened URLs! </p>
+    <p> Please login to view links! </p>
   <% } %>
 </body>
 </html>

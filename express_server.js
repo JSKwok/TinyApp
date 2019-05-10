@@ -2,7 +2,6 @@ const express = require('express');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
-const morgan = require('morgan');
 
 const app = express();
 const PORT = 8080;
@@ -13,11 +12,11 @@ app.use(cookieSession({
   name: 'pumpkinSeeds',
   keys: ['secretKey']
 }));
-//app.use(morgan('dev'));
 
 const error403 = 'Error 403: You do not have permission to access this resource. Please visit /login to begin';
 const error404 = 'Error 404: The server was unable to find the requested resource.'
-// Short URL : Long URL database
+
+// Database object storing all short links created.
 const urlDatabase = {
   'b2xVn2': {
     longURL: 'http://www.lighthouselabs.ca',
@@ -29,7 +28,7 @@ const urlDatabase = {
   }
 };
 
-// User database
+// Database object storing all user IDs.
 const users = {
   'userRandomID': {
     id: 'userRandomID',
@@ -43,7 +42,7 @@ const users = {
   }
 };
 
-// Root page. Redirects to /urls if logged in, redirects to /login otherwise.
+// Root page. Redirects to /urls if logged in, redirects to /login otherwise
 app.get('/', (req, res) => {
   if (req.session.user_id) {
     res.redirect('/urls');
@@ -52,12 +51,12 @@ app.get('/', (req, res) => {
   };
 });
 
-// GET routing to JSON files of URL database
+// Routing to load JSON files of URL database
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
-// GET routing to main URLs index
+// Routing to load main URLs index navigation page
 app.get('/urls', (req, res) => {
   let templateVars = {
     urls: urlsForUser(req.session.user_id),
@@ -67,7 +66,7 @@ app.get('/urls', (req, res) => {
   res.render('urls_index', templateVars);
 });
 
-// Get routing to page for creating new URL
+// Routing to load page for creating new short links
 app.get('/urls/new', (req, res) => {
   let templateVars = {
     user: users[req.session.user_id]
@@ -79,7 +78,7 @@ app.get('/urls/new', (req, res) => {
   }
 });
 
-// POST routing to generate new short URL at /URLs
+// Routing to generate new short links from randomly generated strings
 app.post('/urls', (req, res) => {
   if (!req.session.user_id) {
     res.status(403).send(error403)
@@ -93,7 +92,7 @@ app.post('/urls', (req, res) => {
   };
 });
 
-// GET routing going to details/edit page by ID
+// Routing to load the page to edit and view details for a generated short link
 app.get('/urls/:shortURL', (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
@@ -112,7 +111,7 @@ app.get('/urls/:shortURL', (req, res) => {
   };
 });
 
-// POST routing to update details/edit page by ID
+// Routing to change the full URL associated with a particular short link
 app.post('/urls/:id', (req, res) => {
   if (!req.session.user_id) {
     res.status(403).send(error403);
@@ -134,7 +133,7 @@ app.get('/u/:shortURL', (req, res) => {
   };
 });
 
-// POST routing to delete a URL
+// Routing to delete a previously created shortlink
 app.post('/urls/:shortURL/delete', (req, res) => {
   if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
     delete urlDatabase[req.params.shortURL];
@@ -144,7 +143,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   };
 });
 
-// GET routing to login page
+// Routing to load login page
 app.get('/login', (req, res) => {
   let templateVars = {
     user: users[req.session.user_id]
@@ -156,11 +155,11 @@ app.get('/login', (req, res) => {
   };
 });
 
-// POST routing to login page, verifies if email exists, email and password match, creates cookie
+// Routing to verify login information, create a cookie if successful
 app.post('/login', (req, res) => {
-  if (emailInObject(req.body.email)) {
+  if (emailInObject(req.body.email)) { // Verify if email is on database
     for (user in users) {
-      if (users[user]['email'] === req.body.email && bcrypt.compareSync(req.body.password, users[user]['password'])) {
+      if (users[user]['email'] === req.body.email && bcrypt.compareSync(req.body.password, users[user]['password'])) { // Verify if email and password are both a match
         req.session.user_id = user;
         res.redirect('/urls');
         return;
@@ -172,13 +171,13 @@ app.post('/login', (req, res) => {
   };
 });
 
-// POST routing to logout URL, clears cookie
+// Routing to leave current session, removes cookie
 app.post('/logout', (req, res) => {
   req.session = null;
   res.redirect('/urls');
 });
 
-// GET routing to load register page, create cookie
+// Routing to load registration page
 app.get('/register', (req, res) => {
   let templateVars = {
     user: users[req.session.user_id]
@@ -190,7 +189,7 @@ app.get('/register', (req, res) => {
   };
 });
 
-// POST routing to register page, creates user ID if email not taken
+// Routing to create an account through the register page
 app.post('/register', (req, res) => {
   const newUserID = generateRandomString();
   // Handle registration with a blank field:
@@ -211,7 +210,7 @@ app.post('/register', (req, res) => {
   };
 });
 
-// Generator for short ID
+// Generates a 6 character alphanumeric code to create short links and user ID.
 function generateRandomString() {
   let output = '';
   const alphanumeric = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -221,7 +220,7 @@ function generateRandomString() {
   return output;
 };
 
-// Verify if email in use
+// Verifies if entered email is already on the database
 function emailInObject(emailInput) {
   for (user in users) {
     if (users[user]['email'] === emailInput) {
@@ -231,6 +230,7 @@ function emailInObject(emailInput) {
   return false;
 };
 
+// Returns the short links associated with an inputted user account
 function urlsForUser(id) {
   let output = {}
   for (let url in urlDatabase) {

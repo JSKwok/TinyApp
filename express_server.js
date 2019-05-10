@@ -15,6 +15,8 @@ app.use(cookieSession({
 }));
 //app.use(morgan('dev'));
 
+const error403 = 'Error 403: You do not have permission to access this resource. Please visit /login to begin';
+const error404 = 'Error 404: The server was unable to find the requested resource.'
 // Short URL : Long URL database
 const urlDatabase = {
   'b2xVn2': {
@@ -80,7 +82,7 @@ app.get('/urls/new', (req, res) => {
 // POST routing to generate new short URL at /URLs
 app.post('/urls', (req, res) => {
   if (!req.session.user_id) {
-    res.status(403).send('Error 403: You do not have permission to access this resource. Please visit /login to begin')
+    res.status(403).send(error403)
   } else {
     let newShortKey = generateRandomString();
     urlDatabase[newShortKey] = {
@@ -100,11 +102,11 @@ app.get('/urls/:shortURL', (req, res) => {
     user: users[req.session.user_id]
   };
   if (!Object.keys(urlDatabase).includes(req.params.shortURL)) {
-    res.status(404).send('Error 404: The server was unable to find the requested resource.');
+    res.status(404).send(error404);
   } else if (!req.session.user_id) {
-    res.status(403).send('Error 403: You do not have permission to access this resource. Please visit /login to begin');
+    res.status(403).send(error403);
   } else if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
-    res.status(403).send('Error 403: You do not have permission to access this resource. Please visit /login to begin');
+    res.status(403).send(error403);
   } else {
     res.render('urls_show', templateVars);
   };
@@ -113,9 +115,9 @@ app.get('/urls/:shortURL', (req, res) => {
 // POST routing to update details/edit page by ID
 app.post('/urls/:id', (req, res) => {
   if (!req.session.user_id) {
-    res.status(403).send('Error 403: You do not have permission to access this resource. Please visit /login to begin');
+    res.status(403).send(error403);
   } else if (req.session.user_id !== urlDatabase[req.params.id].userID) {
-    res.status(403).send('Error 403: You do not have permission to access this resource. Please visit /login to begin');
+    res.status(403).send(error403);
   } else {
     urlDatabase[req.params.id]['longURL'] = req.body['update'];
     res.redirect(/urls/);
@@ -125,7 +127,7 @@ app.post('/urls/:id', (req, res) => {
 // Link from short URL to full website
 app.get('/u/:shortURL', (req, res) => {
   if (!Object.keys(urlDatabase).includes(req.params.shortURL)) {
-    res.status(404).send('Error 404: The server was unable to find the requested resource.');
+    res.status(404).send(error404);
   } else {
     const longURL = urlDatabase[req.params.shortURL]['longURL'];
     res.redirect(longURL);
@@ -138,7 +140,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
     delete urlDatabase[req.params.shortURL];
     res.redirect('/urls');
   } else {
-    res.status(403).send('Error 403: You do not have permission to access this resource. Please visit /login to begin');
+    res.status(403).send(error403);
   };
 });
 

@@ -64,6 +64,9 @@ app.get('/urls', (req, res) => {
     user: users[req.session.user_id]
   };
   res.render('urls_index', templateVars);
+  if (!req.session.user_id) {
+    res.status(403);
+  };
 });
 
 // Routing to load page for creating new short links

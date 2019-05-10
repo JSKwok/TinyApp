@@ -19,7 +19,7 @@
     <div class="membersonly">
       <form method="POST" action="/urls/<%= shortURL %>">
         <p> Short Link: <strong><%= shortURL %></strong></p>
-        <p> TinyURL for <%=database[shortURL]['longURL']%> </p>
+        <p> This link redirects to <strong><%=database[shortURL]['longURL']%></strong></p>
         <label for="update">Change URL for this Link:</label>
         <input type="text" name="update" placeholder="http://" style="width:200px">
         <button type="submit"> Update </button>
